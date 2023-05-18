@@ -91,9 +91,3 @@ for i in range(d):
     images.append(im_ani)
 
 images[0].save('african_head.gif', save_all=True, append_images=images[1:], optimize=False, duration=100, loop=0)
-
-
-
-
-
-
