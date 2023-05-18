@@ -60,39 +60,10 @@ with open('african_head.obj', 'r') as f:
         vn1, vn2, vn3 = [float(i) for i in vn1], [float(i) for i in vn2], [float(i) for i in vn3]
         faces_v_vt_vn.append(((v1, v2, v3), (vt1, vt2, vt3), (vn1, vn2, vn3)))
 
-'''z_buf_im = ahf.z_buf_im(z_buf, faces_v_vt_vn, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, 1)
-for face in faces_v_vt_vn:
-    X1 = np.matrix([face[0][0][0], face[0][0][1], face[0][0][2], 1])
-    X2 = np.matrix([face[0][1][0], face[0][1][1], face[0][1][2], 1])
-    X3 = np.matrix([face[0][2][0], face[0][2][1], face[0][2][2], 1])
-
-    X1_n = np.matrix([face[2][0][0], face[2][0][1], face[2][0][2], 1])
-    X2_n = np.matrix([face[2][1][0], face[2][1][1], face[2][1][2], 1])
-    X3_n = np.matrix([face[2][2][0], face[2][2][1], face[2][2][2], 1])
-
-    X1_t = np.matrix([[face[1][0][0]], [face[1][0][1]], [face[1][0][2]]])
-    X2_t = np.matrix([[face[1][1][0]], [face[1][1][1]], [face[1][1][2]]])
-    X3_t = np.matrix([[face[1][2][0]], [face[1][2][1]], [face[1][2][2]]])
-
-    # X1_xy, X2_xy, X3_xy - вершины в новых координатах
-    X1_xy = ahf.new_X(X1, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, 1)
-    X2_xy = ahf.new_X(X2, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, 1)
-    X3_xy = ahf.new_X(X3, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, 1)
-
-    X1_n_xy = ahf.new_Xn(X1_n, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, 1)
-    X2_n_xy = ahf.new_Xn(X2_n, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, 1)
-    X3_n_xy = ahf.new_Xn(X3_n, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, 1)
-
-    if ahf.back_face_culling(p_cam_A, X1_xy, X2_xy, X3_xy) < 0:
-        ahf.rectangle(1, z_buf_im, canvas1, texture_img, X1_xy, X2_xy, X3_xy, X1_t, X2_t, X3_t)
-        ahf.rectangle(2, z_buf_im, canvas2, texture_img, X1_xy, X2_xy, X3_xy, X1_t, X2_t, X3_t)
-        ahf.rectangle(3, z_buf_im, canvas3, texture_img, X1_xy, X2_xy, X3_xy, X1_t, X2_t, X3_t)
-'''
 d = 24
 a = 360 / d
 k = 360 / d
 ang = np.pi / 180
-#p_cam_A = [0, 4, 3]
 p_cam_A = [3, 4, 3]
 p_cam_B = [0, 0, 0]
 c = [0, 0, 3]
@@ -119,13 +90,6 @@ for i in range(d):
     im_ani = img.fromarray(canvas4)
     images.append(im_ani)
 
-
-'''im = img.fromarray(canvas1)
-im.save("african_head1.png")
-im = img.fromarray(canvas2)
-im.save("african_head2.png")
-im = img.fromarray(canvas3)
-im.save("african_head3.png")'''
 images[0].save('african_head.gif', save_all=True, append_images=images[1:], optimize=False, duration=100, loop=0)
 
 
