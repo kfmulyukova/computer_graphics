@@ -87,10 +87,6 @@ def find_Mproj(case_proj):
         l, r, b, t, n, f = -4, 0, -2, 2, -10, 10
     if case_proj == 2:
         l, r, b, t, n, f = -8, 8, -8, 8, -10, 10
-    '''Mproj=np.matrix([[2*n/(r-l), 0, (r+l)/(r-l), 0],
-                     [0, 2*n/(t-b), (t+b)/(t-b), 0],
-                     [0, 0, -(f+n)/(f-n), -2*f*n/(f-n)],
-                     [0, 0, -1, 0]])'''
     Mproj = np.matrix([[2 / (r - l), 0, 0, -(r+l)/(r-l)],
                        [0, 2 / (t - b), 0, -(t+b)/(t-b)],
                        [0, 0, -2 / (f - n), -(f+n) / (f - n)],
@@ -107,14 +103,11 @@ def Mviewport(x_l_corn, y_l_corn, N, x_n, y_n, z_n):
 def new_X(X, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, case_proj):
     X = X.T
     X_Mo2w = find_Mo2w(c, koef_s, ang_x, ang_y, ang_z) @ X
-    #print(ahf.find_Mo2w(c, koef_s, ang_x, ang_y, ang_z))
     X_Mw2c = find_Mw2c(p_cam_A, p_cam_B) @ X_Mo2w
-    #print(X_Mw2c)
     X_Mproj = find_Mproj(case_proj) @ X_Mw2c
     X_Mproj[0] = X_Mproj[0]/X_Mproj[3]
     X_Mproj[1] = X_Mproj[1] / X_Mproj[3]
     X_Mproj[2] = X_Mproj[2] / X_Mproj[3]
-    #print(X_Mproj)
     X_Mviewport = Mviewport(0, 0, N, X_Mproj[0], X_Mproj[1], X_Mproj[2])  # (x_w, y_w, z_n)
     return X_Mviewport
 
@@ -132,8 +125,6 @@ def new_Xn(X, c, koef_s, ang_x, ang_y, ang_z, p_cam_A, p_cam_B, N, case_proj):
     return X_Mviewport
 
 def back_face_culling(p_cam_A, X1_xy, X2_xy, X3_xy):
-    #sum = np.array(X1_n_xy) + np.array(X2_n_xy) + np.array(X3_n_xy)
-    #norm_vect = sum / np.sqrt(sum[0]**2 + sum[1]**2 + sum[2]**2)
     v_vect = [X1_xy[0]-p_cam_A[0], X1_xy[1]-p_cam_A[1], X1_xy[2]-p_cam_A[2]]
     norm_vect = np.cross(np.array([X2_xy[0] - X1_xy[0], X2_xy[1] - X1_xy[1], X2_xy[2] - X1_xy[2]]),
                          np.array([X3_xy[0] - X2_xy[0], X3_xy[1] - X2_xy[1], X3_xy[2] - X2_xy[2]]))
@@ -143,13 +134,6 @@ def barycentric_coords(x, y, v0, v1, v2):
     T = np.matrix([[v0[0], v1[0], v2[0]], [v0[1], v1[1], v2[1]], [1, 1, 1]])
     T_obr = np.linalg.inv(T)
     X = np.array([[x], [y], [1]])
-    '''T = np.matrix([[v0[0] - v2[0], v1[0] - v2[0]],
-                   [v0[1] - v2[1], v1[1] - v2[1]]])
-    T_obr = np.linalg.inv(T)
-    X = np.array([[x - v2[0]],
-                  [y - v2[1]]])
-    c = 1 - V[0] - V[1]
-    V = np.array([V[0], V[1], c])'''
     V = T_obr @ X
     return V
 
@@ -162,9 +146,6 @@ def z_buf_f(z_buf, v0, v1, v2):
         for j in range(int(y_min), int(y_max)+1):
             V = barycentric_coords(i, j, v0, v1, v2)
             z_n = float(V[0] * v0[2] + V[1] * v1[2] + V[2] * v2[2])
-            # print(z_buf)
-            #print('z_n', z_n)
-            # print(z_buf[i][ j])
             if V[0] >= 0 and V[1] >= 0 and V[2] >= 0:
                 if z_n < z_buf[i, j]:
                     z_buf[i, j] = z_n
@@ -200,18 +181,6 @@ def rectangle(case, z_buf, canvas,texture_img, v0, v1, v2, v0_t, v1_t, v2_t):
                         draw_line(v0[0], v0[1], v2[0], v2[1], canvas, [255, 255, 255])
                         draw_line(v2[0], v2[1], v1[0], v1[1], canvas, [255, 255, 255])
                     if case == 2:
-                        '''sum = np.array(v1_n) + np.array(v2_n) + np.array(v3_n)
-                        n = sum / np.sqrt(sum[0]**2 + sum[1]**2 + sum[2]**2)
-                        n = np.cross(np.array([v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2]]),
-                                             np.array([v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]]))
-                        n_n = n/np.sqrt(n[0]**2 + n[1]**2 + n[2]**2)
-                        p = np.array([i, j, v0[2]])
-                        color = np.abs(np.dot(norm_vect, p)*255)
-                        print('z_n', z_n)
-                        l = np.array([0, 0, -1])
-                        intensity = np.dot(l, n)
-                        print(intensity)
-                        color = [int(np.abs(255*intensity)), int(np.abs(255*intensity)), int(np.abs(255*intensity))]'''
                         color = np.array([np.abs(z_n*10)-2, np.abs(z_n*10)-2, np.abs(z_n*10)-2]) * 255
                         set_pixel(i, j, canvas, color)
                     if case == 3:
